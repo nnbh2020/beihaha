@@ -81,11 +81,11 @@
 // #define M5STACK
 
 // 屏幕引脚定义
-#define TFT_CS 5
-#define TFT_RST 12
-#define TFT_DC 32
-#define TFT_SCLK 18
-#define TFT_MOSI 23
+#define TFT_CS   10    
+#define TFT_RST  15
+#define TFT_DC   16
+#define TFT_MOSI 11
+#define TFT_SCLK 12
 #define TFT_BL   -1
 #define TOUCH_CS -1
 

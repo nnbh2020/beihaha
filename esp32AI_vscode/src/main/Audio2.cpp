@@ -259,10 +259,12 @@ Audio2::Audio2(bool internalDAC /* = false */, uint8_t channelEnabled /* = I2S_D
     }
     else
     {
+        // 设置I2S模式为标准I2S输出（不包含DAC模式）
         m_i2s_config.mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX);
 
 #if ESP_ARDUINO_VERSION_MAJOR >= 2
-        m_i2s_config.communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_STAND_I2S); // Arduino vers. > 2.0.0
+        //m_i2s_config.communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_STAND_I2S); // Arduino vers. > 2.0.0
+        m_i2s_config.communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_STAND_MSB);
 #else
         m_i2s_config.communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB);
 #endif
@@ -613,6 +615,7 @@ bool Audio2::connecttohost(const char *host, const char *user, const char *pwd)
     if (res)
     {
         Serial.println("连接成功！");
+        printf("连接成功！");
         uint32_t dt = millis() - t;
         strcpy(m_lastHost, l_host);
         AUDIO_INFO("%s has been established in %u ms, free Heap: %u bytes",
@@ -622,6 +625,7 @@ bool Audio2::connecttohost(const char *host, const char *user, const char *pwd)
     else
     {
         Serial.println("连接失败！");
+        printf("连接失败！");
     }
 
     m_expectedCodec = CODEC_NONE;
@@ -664,7 +668,9 @@ bool Audio2::connecttohost(const char *host, const char *user, const char *pwd)
         setDatamode(HTTP_RESPONSE_HEADER); // Handle header
         m_streamType = ST_WEBSTREAM;  // ST_WEBSTREAM;
         Serial.print("play music: ");
+          
         Serial.println(m_streamType);
+        printf("play music: %u\n", m_streamType);
     }
     else
     {
@@ -6251,7 +6257,26 @@ bool Audio2::playSample(int16_t sample[2])
     if (m_f_internalDAC)
     {
         s32 += 0x80008000;
+
+        if (m_channels == 1)
+        {
+            // 打印单声道数据
+             printf("打印单声道数据: %d\n", sample[RIGHTCHANNEL]);
+             
+        }
+        else
+        {
+            // 打印立体声数据
+            printf("打印立体声数据: Left=%d, Right=%d\n", sample[LEFTCHANNEL], sample[RIGHTCHANNEL]);
+             
+        }
     }
+    else
+    {
+        printf("打印立体声数据2: Left=%d, Right=%d\n", sample[LEFTCHANNEL], sample[RIGHTCHANNEL]);
+    }
+     printf((const char *)&s32 );
+     
     m_i2s_bytesWritten = 0;
     esp_err_t err = i2s_write((i2s_port_t)m_i2s_num, (const char *)&s32, sizeof(uint32_t), &m_i2s_bytesWritten, 100);
     if (err != ESP_OK)

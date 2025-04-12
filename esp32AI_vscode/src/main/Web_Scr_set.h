@@ -2,7 +2,7 @@
 #define Web_Scr_h
 
 #include <Arduino.h>
-#include "base64.h"
+
 #include "WiFi.h"
 #include <WiFiClientSecure.h>
 #include "HTTPClient.h"
@@ -17,16 +17,22 @@
 #include <ESPAsyncWebServer.h>
 #include <Preferences.h>
 // 与屏幕显示有关的库
+/* #if ENABLE_SCREEN
 #include <TFT_eSPI.h>
 #include <U8g2_for_TFT_eSPI.h>
+#endif */
+#if ENABLE_SCREEN
+#include "ScreenHandler.h"
+#endif
+
 #include "guichu.h"
 #include "listening.h"
+#if ENABLE_SCREEN
 
-#include <FastLED.h>
-#include <TJpg_Decoder.h>
+
 #define width   128     //图片宽度
 #define height  160     //图片高度
-
+#endif
 // AP模式的SSID和密码
 extern const char *ap_ssid;
 extern const char *ap_password;
